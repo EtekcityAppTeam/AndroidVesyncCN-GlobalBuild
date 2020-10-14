@@ -1,0 +1,45 @@
+apply plugin: 'maven'
+
+
+def isReleaseBuild() {
+    return !getAarVersionName().toUpperCase().contains("SNAPSHOT")
+}
+
+// 先读取jenkins配置的参数，然后在读本地的配置
+def getAarVersionName() {
+    return System.getenv()['AAR_VERSION_NAME'] as String ?:VERSION_NAME
+}
+
+// 先读取jenkins配置的参数，然后在读本地电脑的配置
+def getRepositoryUsername() {
+    return System.getenv()['NEXUS_USERNAME'] as String ?:(hasProperty('NEXUS_USERNAME') ? NEXUS_USERNAME : "")
+}
+
+// 先读取jenkins配置的参数，然后在读本地电脑的配置
+def getRepositoryPassword() {
+    return System.getenv()['NEXUS_PASSWORD'] as String ?: (hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : "")
+}
+
+afterEvaluate { project ->
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                pom.groupId = GROUP
+                pom.artifactId = POM_ARTIFACT_ID
+                pom.version = getAarVersionName()
+                pom.packaging = 'aar'
+                pom.name = 'vesync'
+
+                if (isReleaseBuild()) {
+                    repository(url: RELEASE_REPOSITORY_URL) {
+                        authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+                    }
+                } else {
+                    snapshotRepository(url: SNAPSHOT_REPOSITORY_URL) {
+                        authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+                    }
+                }
+            }
+        }
+    }
+}
