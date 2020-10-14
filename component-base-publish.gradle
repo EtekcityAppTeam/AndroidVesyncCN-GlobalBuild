@@ -19,6 +19,19 @@ def getRepositoryUsername() {
 def getRepositoryPassword() {
     return System.getenv()['NEXUS_PASSWORD'] as String ?: (hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : "")
 }
+// 先读取项目配置的参数，没有的话就用默认的
+def getReleaseRepositoryUrl(){
+    return hasProperty('RELEASE_REPOSITORY_URL') ? RELEASE_REPOSITORY_URL : default_release_repository_url
+}
+// 先读取项目配置的参数，没有的话就用默认的
+def getSnapShotRepositoryUrl(){
+    return hasProperty('SNAPSHOT_REPOSITORY_URL') ? SNAPSHOT_REPOSITORY_URL : default_snapshot_repository_url
+}
+
+ext {
+    default_snapshot_repository_url='http://nexus.vesync.com:9081/repository/app-snapshots/'
+    default_release_repository_url="http://nexus.vesync.com:9081/repository/app-releases/"
+}
 
 afterEvaluate { project ->
     uploadArchives {
@@ -31,11 +44,11 @@ afterEvaluate { project ->
                 pom.name = 'vesync'
 
                 if (isReleaseBuild()) {
-                    repository(url: RELEASE_REPOSITORY_URL) {
+                    repository(url: getReleaseRepositoryUrl()) {
                         authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
                     }
                 } else {
-                    snapshotRepository(url: SNAPSHOT_REPOSITORY_URL) {
+                    snapshotRepository(url: getSnapShotRepositoryUrl()) {
                         authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
                     }
                 }
