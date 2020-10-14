@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
-apply from: project.rootProject.file("component-base-publish.gradle")
+apply from: 'https://raw.githubusercontent.com/EtekcityAppTeam/AndroidVesyncCN-GlobalBuild/master/component-base-publish.gradle'
 
 android {
     compileSdkVersion 29
