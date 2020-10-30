@@ -6,3 +6,5 @@ Android Vesync中国区全局编译配置环境
 同时配置了其他的公共配置和公共依赖
 ### 2. component-base-publish.gradle
 组件打包aar的gradle task配置文件
+### 2. component-dev-config.gradle
+读取根目录下的local.properties文件里的配置，控制组件是否进行源码以来，防止配置代码误传到git上
