@@ -1,0 +1,33 @@
+def getPropertiesBoolean(String name) {
+    localPro.containsKey(name) && localPro.get(name).toBoolean()
+}
+
+def getPropertiesValue(String name) {
+    localPro.containsKey(name) ? localPro.get(name) : "NoValue!!"
+}
+
+ext {
+    File file = file(rootProject.projectDir.toString() + '\\' + 'local.properties')
+    println 'load local.properties path=' + file.toString()
+    localPro = new Properties()
+    if (file.exists()) {
+        //加载资源
+        InputStream inputStream = file.newDataInputStream()
+        localPro.load(inputStream)
+        for (Object o : localPro.keySet()) {
+            name = o.toString()
+            if (name.startsWith('use')) {
+                println name + '=' + getPropertiesBoolean(name)
+            }
+        }
+    }
+    // 解析local.properties里的配置属性
+    useLocalModuleBase = getPropertiesBoolean('useLocalModuleBase')
+    useLocalModuleResourece = getPropertiesBoolean('useLocalModuleResourece')
+    useLocalModuleWidget = getPropertiesBoolean('useLocalModuleWidget')
+    useLocalModuleAccount = getPropertiesBoolean('useLocalModuleAccount')
+    useLocalModuleDevice = getPropertiesBoolean('useLocalModuleDevice')
+    useLocalModuleFirmware = getPropertiesBoolean('useLocalModuleFirmware')
+    useLocalModuleRecipe = getPropertiesBoolean('useLocalModuleRecipe')
+    useLocalModuleAirfry = getPropertiesBoolean('useLocalModuleAirfry')
+}
