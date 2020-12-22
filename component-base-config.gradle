@@ -77,7 +77,7 @@ apply plugin: 'io.gitlab.arturbosch.detekt'
 detekt {
     failFast = true // fail build on any finding
     buildUponDefaultConfig = true // preconfigure defaults
-    config = files("$rootDir/config/detekt.yml") // point to your custom config defining rules to run, overwriting default behavior
+    config = files("https://raw.githubusercontent.com/EtekcityAppTeam/AndroidVesyncCN-GlobalBuild/master/detekt.yml") // point to your custom config defining rules to run, overwriting default behavior
     // baseline = file("$rootDir/config/baseline.yml") // a way of suppressing issues before introducing detekt
 
     reports {
