@@ -1,11 +1,8 @@
-apply plugin: 'maven-publish'
+apply plugin: 'maven'
+
 
 def isReleaseBuild() {
     return !getAarVersionName().toUpperCase().contains("SNAPSHOT")
-}
-
-def isAndroidLib() {
-    return getPlugins().hasPlugin("com.android.library")
 }
 
 // 先读取jenkins配置的参数，然后在读本地的配置
@@ -32,40 +29,28 @@ def getSnapShotRepositoryUrl(){
 }
 
 ext {
-    default_snapshot_repository_url = 'https://nexus.vesync.co/repository/app-snapshots/'
-    default_release_repository_url = "https://nexus.vesync.co/repository/app-releases/"
+    default_snapshot_repository_url='https://nexus.vesync.co/repository/app-snapshots/'
+    default_release_repository_url="https://nexus.vesync.co/repository/app-releases/"
 }
 
-afterEvaluate {
-    publishing {
-        publications {
-            maven(MavenPublication) {
-                groupId GROUP
-                artifactId POM_ARTIFACT_ID
-                version getAarVersionName()
-
-                if (isAndroidLib() && isReleaseBuild()) {
-                    from components.release
-                } else if (isAndroidLib() && !isReleaseBuild()) {
-                    from components.debug
-                } else {
-                    from components.java
-                }
-            }
-        }
+afterEvaluate { project ->
+    uploadArchives {
         repositories {
-            maven {
-                // 允许使用明文地址http
-                allowInsecureProtocol = true
-                name = "nexus"
+            mavenDeployer {
+                pom.groupId = GROUP
+                pom.artifactId = POM_ARTIFACT_ID
+                pom.version = getAarVersionName()
+                pom.packaging = 'aar'
+                pom.name = 'vesync'
+
                 if (isReleaseBuild()) {
-                    url = getReleaseRepositoryUrl()
+                    repository(url: getReleaseRepositoryUrl()) {
+                        authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+                    }
                 } else {
-                    url = getSnapShotRepositoryUrl()
-                }
-                credentials {
-                    username = getRepositoryUsername()
-                    password = getRepositoryPassword()
+                    snapshotRepository(url: getSnapShotRepositoryUrl()) {
+                        authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+                    }
                 }
             }
         }
